@@ -8,6 +8,7 @@ import CurrWeekSummary from '@/components/currweek-summary';
 import HistorySummary from '@/components/history-summary';
 import UserSetting from '@/components/usersetting';
 import Admin from '@/components/admin';
+import Forgetpwd from '@/components/forgetpwd';
 
 Vue.use(Router);
 
@@ -17,11 +18,13 @@ const router = new Router({
     if (savedPosition) {
       return savedPosition;
     } else {
-      return { x: 0, y: 0 };
+      return {
+        x: 0,
+        y: 0
+      };
     }
   },
-  routes: [
-    {
+  routes: [{
       path: '/',
       name: 'login',
       component: Login
@@ -30,8 +33,7 @@ const router = new Router({
       path: '/main',
       name: 'main',
       component: Main,
-      children: [
-        {
+      children: [{
           path: 'input',
           name: 'input',
           component: Input
@@ -62,6 +64,11 @@ const router = new Router({
       path: '/signup',
       name: 'signup',
       component: Signup
+    },
+    {
+      path: '/forgetpwd',
+      name: 'forgetpwd',
+      component: Forgetpwd
     }
   ]
 });
