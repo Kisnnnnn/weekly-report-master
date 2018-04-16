@@ -1,7 +1,7 @@
 <template>
   <div class="login-wrap">
     <div class="login-box">
-      <i-form ref="form" :model="user">
+      <i-form ref="form" :model="user" :rules="rules">
         <Form-item>
           <i-select v-model="groupIndex" style="margin-bottom:10px;">
             <!-- <i-option value="-1">请选择所在小组</i-option> -->
@@ -87,6 +87,13 @@
     },
     data() {
       return {
+        rules: {
+          pwd: [{
+            required: true,
+            message: '请填写密码',
+            trigger: 'blur'
+          }]
+        },
         user: {
           name: localStorage.getItem('localUserName') || '',
           pwd: ''
@@ -147,6 +154,7 @@
     methods: {
       login() {
         this.$refs.form.validate(isValidated => {
+          if (!isValidated) return;
           localStorage.setItem('localGroupIndex', this.groupIndex);
           localStorage.setItem('localUserName', this.user.name);
           api.logIn(this.user.name, this.user.pwd).then(user => {

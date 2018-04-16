@@ -1,7 +1,7 @@
 <template>
   <div class="signup-wrap">
     <div class="signup-box">
-      <i-form ref="form" :model="user" :rules="relues">
+      <i-form ref="form" :model="user" :rules="rules">
         <FormItem prop="name">
           <i-input type="text" v-model="user.name" placeholder="请输入您的姓名"></i-input>
         </FormItem>
@@ -74,7 +74,7 @@
           groupIndex: -1
         },
         groups: [],
-        relues: {
+        rules: {
           name: [{
             required: true,
             message: '请填写用户名',
