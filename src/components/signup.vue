@@ -2,27 +2,32 @@
   <div class="signup-wrap">
     <div class="signup-box">
       <i-form ref="form" :model="user" :rules="rules">
-        <FormItem prop="name">
+        <Form-item prop="name">
           <i-input type="text" v-model="user.name" placeholder="请输入您的姓名"></i-input>
-        </FormItem>
-        <FormItem prop="pwd">
+        </Form-item>
+        <Form-item prop="pwd">
           <i-input type="password" v-model="user.pwd" placeholder="请输入密码"></i-input>
-        </FormItem>
-        <FormItem prop="email">
+        </Form-item>
+        <Form-item prop="email">
           <i-input type="text" v-model="user.email" placeholder="请输入邮箱"></i-input>
-        </FormItem>
-        <Form-item v-if="groups.length">
-          <i-select v-model="user.groupIndex" style="margin-bottom:10px;">
+        </Form-item>
+        <Form-item prop="userType">
+          <i-select placeholder="请选择" v-model="user.userType">
+            <i-option v-for="items in usertypes" :value="items.value" :key="items.value">{{ items.label }}</i-option>
+          </i-select>
+        </Form-item>
+        <Form-item prop="groupIndex" v-if="groups.length">
+          <i-select placeholder="请选择小组" v-model="user.groupIndex" style="margin-bottom:10px;">
             <!-- <i-option value="-1">请选择所在小组</i-option> -->
             <i-option v-for="item in groups" :key="item.name" :value="item.index">{{ item.name }}</i-option>
           </i-select>
         </Form-item>
-        <FormItem style="text-align:center;">
+        <Form-item style="text-align:center;">
           <ButtonGroup>
             <i-button type="primary" @click="signup">注册并登录</i-button>
             <i-button type="default" @click="login">已有账号，去登录</i-button>
           </ButtonGroup>
-        </FormItem>
+        </Form-item>
       </i-form>
     </div>
   </div>
@@ -33,6 +38,7 @@
   import FormItem from 'iview/src/components/form/form-item';
   import Input from 'iview/src/components/input/input';
   import Button from 'iview/src/components/button/';
+  import MessageTips from 'iview/src/components/message';
   import {
     Select,
     Option
@@ -40,7 +46,6 @@
   import Modal from 'iview/src/components/Modal/index.js';
   import api from '@/api/index.js';
   window.api = api;
-  console.log(api);
   export default {
     name: 'signup',
     components: {
@@ -71,8 +76,19 @@
           name: '',
           pwd: '',
           email: '',
-          groupIndex: -1
+          groupIndex: 0,
+          userType: 0,
         },
+        usertypes: [{
+          value: 0,
+          label: '正式员工'
+        }, {
+          value: 1,
+          label: '试用员工'
+        }, {
+          value: 2,
+          label: '实习员工'
+        }],
         groups: [],
         rules: {
           name: [{
@@ -95,46 +111,48 @@
               message: '邮箱格式不正确',
               trigger: 'blur'
             }
-          ]
+          ],
+          userType: [{
+            type: 'number',
+            required: true,
+            message: '请选择',
+            trigger: 'change'
+          }],
+          groupIndex: [{
+            type: 'integer',
+            required: true,
+            message: '请选择小组',
+            trigger: 'change'
+          }],
         }
       };
     },
     computed: {
       groupName() {
-        if (!this.groups.length) return '';
-        return this.groups.filter(item => item.index === this.user.groupIndex)[0]
-          .name;
+        if (!this.groups.length || this.user.groupIndex === -1) return '';
+        let val = this.groups.filter(item => item.index === this.user.groupIndex)[0].name;
+        return val;
       }
     },
     methods: {
       signup() {
         this.$refs.form.validate(isValidated => {
           if (!isValidated) return;
-          let user = {
-            name: this.user.name,
-            pwd: this.user.pwd,
-            email: this.user.email,
-            groupName: this.groupName,
-            groupIndex: this.user.groupIndex
-          };
-          // 检查有无选择小组
-          if (this.groups.length && this.user.groupIndex === -1) {
-            Modal.confirm({
-              title: '提醒',
-              content: '确认不选择所在小组？不选择所在小组将无法录入个人工作周报？',
-              onOk: () => {
-                // 登录成功后自动跳转到登录
-                api.signUp(user).then(() => {
-                  this.$router.push('/');
-                });
-              }
-            });
-          } else {
-            // 登录成功后自动跳转到登录
-            api.signUp(user).then(() => {
-              this.$router.push('/');
-            });
-          }
+          let groupName = this.groupName,
+            user = {
+              name: this.user.name,
+              pwd: this.user.pwd,
+              email: this.user.email,
+              groupName: groupName,
+              groupIndex: this.user.groupIndex,
+              userType: this.user.userType
+            };
+          console.log(user);
+          
+          api.signUp(user).then(() => {
+            MessageTips.success('注册成功！请进入对应邮箱验证账号！');
+            this.$router.push('/');
+          });
         });
       },
       login() {

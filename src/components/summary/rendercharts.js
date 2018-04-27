@@ -16,8 +16,14 @@ let prepareDataForCharts = function (data) {
     // 小组
     group = {
       name: [],
-      rate: []
+      rate: [],
+      num: []
     };
+
+  // 小组统计数据
+  let grouparr = [],
+    groupvalarr = [];
+
   data.forEach(item => {
     if (!item.show) return;
     // 得到个人数据
@@ -33,10 +39,12 @@ let prepareDataForCharts = function (data) {
       }
     }
   });
+
   // 统计小组数据
   for (let key in _group) {
     if (_group.hasOwnProperty(key)) {
       group.name.push(key);
+      group.num.push(_group[key].length);
       // 求和并处以数组长度
       group.rate.push(
         _group[key].reduce(function (pre, cur) {
@@ -46,9 +54,37 @@ let prepareDataForCharts = function (data) {
     }
   }
 
+  console.log(JSON.stringify(group));
+
+  // 排序
+  for (let i = 0; i < group.name.length; i++) {
+    switch (group.name[i]) {
+      case '项目一组':
+        grouparr[0] = (group.name[i] + '(' + (group.num[i] + 1) + '人)');
+        groupvalarr[0] = group.rate[i];
+        break;
+      case '项目二组':
+        grouparr[1] = (group.name[i] + '(' + (group.num[i] + 1) + '人)');
+        groupvalarr[1] = group.rate[i];
+        break;
+      case '项目三组':
+        grouparr[2] = (group.name[i] + '(' + (group.num[i] + 1) + '人)');
+        groupvalarr[2] = group.rate[i];
+        break;
+      case '项目四组':
+        grouparr[3] = (group.name[i] + '(' +( group.num[i] + 1) + '人)');
+        groupvalarr[3] = group.rate[i];
+        break;
+      default:
+        break;
+    }
+  }
+
   return {
     person: person,
-    group: group
+    group: group,
+    grouparr: grouparr,
+    groupvalarr: groupvalarr
   };
 };
 // 渲染表格
@@ -78,6 +114,28 @@ let comomOptions = {
 };
 // person charts
 function renderPerson(person) {
+  //按照升序排列数据
+  console.log(JSON.stringify(person));
+  let personArr = [],
+    personRateArr = person.rate,
+    personNameArr = person.name;
+
+  for (let i = 0; i < personRateArr.length; i++) {
+    personArr.push({
+      name: personNameArr[i],
+      rate: personRateArr[i]
+    });
+  }
+
+  personArr.sort(function (x, y) {
+    return y.rate - x.rate;
+  });
+
+  for (let i = 0; i < personArr.length; i++) {
+    personRateArr[i] = personArr[i].rate;
+    personNameArr[i] = personArr[i].name;
+  }
+
   let p_opt = Object.assign(JSON.parse(JSON.stringify(comomOptions)), {
     title: {
       text: '成员工作饱和度',
@@ -164,7 +222,8 @@ function renderPerson(person) {
   personChart.setOption(p_opt);
 }
 // group charts
-function renderGroup(group) {
+function renderGroup(group, grouparr, groupvalarr) {
+
   let g_opt = Object.assign(JSON.parse(JSON.stringify(comomOptions)), {
     title: {
       text: '小组平均工作饱和度',
@@ -178,7 +237,7 @@ function renderGroup(group) {
       }
     },
     xAxis: {
-      data: group.name
+      data: grouparr
       // name: '小组名称'
     },
     yAxis: {
@@ -217,7 +276,7 @@ function renderGroup(group) {
           }
         }
       },
-      data: group.rate,
+      data: groupvalarr,
       barMinHeight: 10,
       barMaxWidth: 50,
       itemStyle: {
@@ -257,5 +316,5 @@ export default function (reports, personEl, groupEl) {
   personChart = echarts.getInstanceByDom(personEl) || echarts.init(personEl);
   groupChart = echarts.getInstanceByDom(groupEl) || echarts.init(groupEl);
   renderPerson(data.person);
-  renderGroup(data.group);
+  renderGroup(data.group, data.grouparr, data.groupvalarr);
 }

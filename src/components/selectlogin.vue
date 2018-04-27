@@ -1,5 +1,6 @@
 <template>
   <div class="login-wrap">
+    <h4 class="login-tit">移动研发2部-周报系统</h4>
     <div class="login-box">
       <i-form ref="form" :model="user" :rules="rules">
         <Form-item>
@@ -209,12 +210,17 @@
 </script>
 
 <style>
+  .login-tit {
+    margin: 50px auto;
+    font-size: 20px;
+    text-align: center;
+  }
   .login-wrap {
     padding: 20px 0;
   }
   .login-box {
     width: 300px;
-    margin-top: calc(30% - 120px);
+    margin-top: 100px;
     margin-left: auto;
     margin-right: auto;
   }

@@ -29,7 +29,7 @@
       </thead>
       <tbody>
         <tr v-for="person in cloneData" v-if="person.show">
-          <td class="text-center">{{person.username}} <span class="person-info" v-if="person.extInfo">({{person.extInfo}})</span></td>
+          <td class="text-center">{{person.username}}<span class="person-info" v-if="person.extInfo">({{person.extInfo}})</span></td>
           <td>
             <ul v-if="person.workList.length > 0">
               <li v-for="item in person.workList">{{item.content}} <span v-if="item.showTime">（{{item.time | toInteger}} 小时）</span><span v-else></span></li>
@@ -139,7 +139,7 @@ export default {
           title: '姓名',
           key: 'username',
           sortable: true,
-          width: '80px'
+          width: '100px'
         },
         {
           title: '工作内容',
@@ -291,6 +291,12 @@ export default {
       );
       data.forEach(item => {
         item.show = notShows[item.userId] ? false : true;
+
+        if (item.userType === 1) {
+          item.username = item.username + '(试用)';
+        }else if (item.userType === 2) {
+          item.username = item.username + '(实习)';
+        }
       });
       return data;
     },
@@ -370,7 +376,7 @@ export default {
   vertical-align: middle;
 }
 .summary-loading {
-  position: absolute;
+  position: absolute; 
   width: 100%;
   height: 100%;
 }

@@ -48,6 +48,8 @@ export default {
     // 重新拉取信息
     AV.User.become(api.getCurrUser()._sessionToken)
       .then(r => {
+        console.log(r);
+        
         this.$set(this, 'user', r.attributes);
       })
       .catch(() => {

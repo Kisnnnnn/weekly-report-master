@@ -31,8 +31,6 @@ function getData(start, end, weeks) {
     api.getAllUser(),
     api.getDataByRange(start, end, { sort: 'asc', field: 'createdAt' })
   ]).then(results => {
-    console.log(results);
-
     window.results = results;
 
     let reports = dealReports(results[1], results[0], weeks);

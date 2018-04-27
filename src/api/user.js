@@ -19,6 +19,7 @@ export default {
   signUp(userInfo) {
     let user = new AV.User(),
       groupIndex = userInfo.groupIndex,
+      userType = userInfo.userType,
       groupName = userInfo.groupName;
 
     user.setUsername(userInfo.name);
@@ -30,6 +31,9 @@ export default {
     }
     if (groupName) {
       user.set('groupName', groupName);
+    }
+    if (userType) {
+      user.set('userType', userType);
     }
 
     return user
