@@ -115,6 +115,6 @@
   }
   .ivu-form-item-error-tip {
     padding-left: 10px;
-    margin: 10px 0;
+
   }
 </style>
